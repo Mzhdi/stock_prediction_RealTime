@@ -18,7 +18,7 @@ def predict_stock_trade_decision(model, today_features):
 
 
 # Initial model filename
-model_filename = 'stock_prediction_model.pkl'
+
 
 
 def train_and_save_model(stock_symbol, start_date, end_date, model_filename):
@@ -61,7 +61,7 @@ def train_and_save_model(stock_symbol, start_date, end_date, model_filename):
 
 app = Flask(__name__)
 
-
+model_filename = 'stock_prediction_model.pkl'
 @app.route('/train', methods=['POST'])
 def train_model_endpoint():
     try:
@@ -84,13 +84,13 @@ def predict_endpoint():
     try:
         data = request.json
         today_features = data['features']
-
+        print(today_features)
         # Load the trained model
         model = joblib.load(model_filename)
-
+        print(model)
         # Make a prediction using the loaded model
         prediction = predict_stock_trade_decision(model, today_features)
-
+        print(prediction)
         # Return the prediction as JSON response
         response = {'prediction': prediction}
         return jsonify(response)
