@@ -1,6 +1,9 @@
 from kafka import KafkaProducer
 import requests
 import time
+import DbConnect as db
+
+database = db.DbConnect()
 
 
 # Define Kafka broker address and topic name
@@ -13,20 +16,24 @@ TIMEOUT = 60000
 
 
 # Create a KafkaProducer instance
-producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER,max_block_ms=TIMEOUT)
+producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER, max_block_ms=TIMEOUT)
 
 # Function to send data to Kafka
+
+
 def send_data_to_kafka():
     # Convert the string to bytes using UTF-8 encoding
-    
-    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol='+STOCK_NAME+'&interval='+DURATION+'&apikey='+API_KEY+'&datatype=csv'
+
+    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + \
+        STOCK_NAME+'&interval='+DURATION+'&apikey='+API_KEY+'&datatype=csv'
     r = requests.get(url)
     if r.status_code == 200:
-    # Parse the response content as text and split it into lines
+        # Parse the response content as text and split it into lines
         data = r.text.splitlines()
         producer.send(KAFKA_TOPIC, value=data)
         print("Data sent to Kafka successfully.")
     # producer.flush()
+
 
 def main():
     try:
@@ -36,9 +43,11 @@ def main():
 
     except Exception as e:
         print(f"An error occurred: {str(e)}")
+        database.insert_one({'error': str(e)})
+
     finally:
         producer.close()
 
+
 if __name__ == "__main__":
     main()
-
