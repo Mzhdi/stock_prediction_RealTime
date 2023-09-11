@@ -5,7 +5,6 @@ import DbConnect as db
 
 database = db.DbConnect()
 
-
 # Define Kafka broker address and topic name
 KAFKA_BROKER = 'localhost:9092'
 KAFKA_TOPIC = 'stock'
@@ -14,26 +13,32 @@ STOCK_NAME = 'GOOG'
 DURATION = '1min'
 TIMEOUT = 60000
 
-
 # Create a KafkaProducer instance
-producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER, max_block_ms=TIMEOUT)
+producer = KafkaProducer(bootstrap_servers=KAFKA_BROKER)
 
 # Function to send data to Kafka
-
-
 def send_data_to_kafka():
-    # Convert the string to bytes using UTF-8 encoding
+    try:
+        # Construct the API URL
+        url = f'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol={STOCK_NAME}&interval={DURATION}&apikey={API_KEY}&datatype=csv'
 
-    url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=' + \
-        STOCK_NAME+'&interval='+DURATION+'&apikey='+API_KEY+'&datatype=csv'
-    r = requests.get(url)
-    if r.status_code == 200:
-        # Parse the response content as text and split it into lines
-        data = r.text.splitlines()
-        producer.send(KAFKA_TOPIC, value=data)
-        print("Data sent to Kafka successfully.")
-    # producer.flush()
+        # Make the API request
+        response = requests.get(url)
 
+        if response.status_code == 200:
+            # Parse the response content as text and split it into lines
+            data = response.text.splitlines()
+
+            # Send each line to Kafka as a separate message
+            producer.send(KAFKA_TOPIC, value=data[1].encode('utf-8'))
+            
+            print("Data sent to Kafka successfully.")
+        else:
+            print(f"API request failed with status code {response.status_code}")
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
+        database.insert_one({'error': str(e)})
 
 def main():
     try:
@@ -41,13 +46,13 @@ def main():
             send_data_to_kafka()
             time.sleep(70)
 
+    except KeyboardInterrupt:
+        print("Script terminated by user.")
     except Exception as e:
         print(f"An error occurred: {str(e)}")
         database.insert_one({'error': str(e)})
-
     finally:
         producer.close()
-
 
 if __name__ == "__main__":
     main()

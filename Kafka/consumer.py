@@ -11,7 +11,7 @@ KAFKA_TOPIC = 'stock'
 
 # Define PostgreSQL database connection parameters
 db_params = {
-    "host": "127.0.0.1",
+    "host": "192.168.1.105",
     "database": "Stock_hist",
     "user": "postgres",
     "password": "zerouk1234"
@@ -32,7 +32,7 @@ def consume_messages_from_kafka_and_insert():
     for message in consumer:
         try:
             # Process the message value (assuming it's in the format 'timestamp,open,high,low,close,volume')
-            message_value = message.value[1]
+            message_value = message.value.decode('utf-8')
             values = message_value.split(',')
             if len(values) == 6:
                 timestamp, open, high, low, close, volume = values
