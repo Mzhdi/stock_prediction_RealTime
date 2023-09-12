@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 from sklearn.linear_model import LogisticRegression
 from flask import Flask, request, jsonify
+import DbConnect as db
+
+database = db.DbConnect()
 
 
 def predict_stock_trade_decision(model, today_features):
@@ -18,7 +21,6 @@ def predict_stock_trade_decision(model, today_features):
 
 
 # Initial model filename
-
 
 
 def train_and_save_model(stock_symbol, start_date, end_date, model_filename):
@@ -62,6 +64,8 @@ def train_and_save_model(stock_symbol, start_date, end_date, model_filename):
 app = Flask(__name__)
 
 model_filename = 'stock_prediction_model.pkl'
+
+
 @app.route('/train', methods=['POST'])
 def train_model_endpoint():
     try:
@@ -76,6 +80,7 @@ def train_model_endpoint():
 
         return jsonify({'message': f"Model trained and saved as {model_filename}"})
     except Exception as e:
+        database.insert_one({'error': str(e)})
         return jsonify({'error': str(e)})
 
 
