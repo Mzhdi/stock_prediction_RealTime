@@ -47,13 +47,13 @@ def consume_messages_from_kafka_and_insert():
 
                     # Define the INSERT statement
                     insert_statement = """
-                    INSERT INTO stock (timestamp, open, high, low, close, volume)
-                    VALUES (%s, %s, %s, %s, %s, %s);
+                    INSERT INTO stock (timestamp, open, high, low, close, volume,prediction)
+                    VALUES (%s, %s, %s, %s, %s, %s,%s)
                     """
 
                     # Execute the INSERT statement with the message values
                     cursor.execute(insert_statement, (timestamp,
-                                   open, high, low, close, volume))
+                                   open, high, low, close, volume, prediction))
                     conn.commit()
 
                     print("Inserted a row into the database.")
