@@ -2,6 +2,7 @@ from kafka import KafkaConsumer
 import psycopg2
 import datetime
 import DbConnect as db
+import axios
 
 database = db.DbConnect()
 
@@ -38,6 +39,12 @@ def consume_messages_from_kafka_and_insert():
                 timestamp, open, high, low, close, volume = values
 
                 try:
+                    response = axios.post(
+                        'http://localhost:5000/predict', json={'open': open, 'high': high, 'low': low, 'close': close, 'volume': volume})
+
+                    prediction = response.json()['prediction']
+                    print(prediction)
+
                     # Define the INSERT statement
                     insert_statement = """
                     INSERT INTO stock (timestamp, open, high, low, close, volume)
