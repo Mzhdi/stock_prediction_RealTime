@@ -12,9 +12,10 @@ database = db.DbConnect()
 def predict_stock_trade_decision(model, today_features):
     # Predict whether it's a good day to open or close based on today's features
     prediction = model.predict([today_features])
-
+    print(prediction)
     # Interpret the prediction
     if prediction[0] == 1:
+    
         return "Open"  # Good day to open a position
     else:
         return "Close"  # Good day to close a position
@@ -89,6 +90,12 @@ def predict_endpoint():
     try:
         data = request.json
         today_features = data['features']
+        
+        # Calculate the short-term SMA
+        today_features.append(today_features[-2])
+
+        # Calculate the long-term SMA
+        today_features.append(today_features[-2])
         print(today_features)
         # Load the trained model
         model = joblib.load(model_filename)
@@ -98,6 +105,7 @@ def predict_endpoint():
         print(prediction)
         # Return the prediction as JSON response
         response = {'prediction': prediction}
+        print(response)
         return jsonify(response)
     except Exception as e:
         return jsonify({'error': str(e)})

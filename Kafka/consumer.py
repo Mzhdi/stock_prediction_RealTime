@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 import psycopg2
 import datetime
 import DbConnect as db
-import axios
+import requests
 
 database = db.DbConnect()
 
@@ -12,7 +12,7 @@ KAFKA_TOPIC = 'stock'
 
 # Define PostgreSQL database connection parameters
 db_params = {
-    "host": "192.168.1.105",
+    "host": "192.168.1.89",
     "database": "Stock_hist",
     "user": "postgres",
     "password": "zerouk1234"
@@ -37,11 +37,11 @@ def consume_messages_from_kafka_and_insert():
             values = message_value.split(',')
             if len(values) == 6:
                 timestamp, open, high, low, close, volume = values
+                data = { 'features':[float(open),float(high),float(low),float(close),float(volume)]}
 
                 try:
-                    response = axios.post(
-                        'http://localhost:5000/predict', json={'open': open, 'high': high, 'low': low, 'close': close, 'volume': volume})
-
+                    response = requests.post(url='http://localhost:5000/predict', json=data)
+                    print(response.text)
                     prediction = response.json()['prediction']
                     print(prediction)
 

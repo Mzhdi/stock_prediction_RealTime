@@ -7,9 +7,11 @@ class DbConnect:
     def __init__(self):
         load_dotenv()
         mongo_uri = os.getenv("MONGO_URI")
+        print(mongo_uri)
         if not mongo_uri:
             raise ValueError("MONGO_URI not found in .env file.")
         self.client = mongo.MongoClient(mongo_uri)
+        print(self.client)
         self.db = self.client['errors']
         self.collection = self.db['errors']
 
