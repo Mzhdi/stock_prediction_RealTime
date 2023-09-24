@@ -1,4 +1,4 @@
-# Docker Compose Project for Stock Prediction
+# Real Time Stock Prediction Pipeline + Dashboard
 
 This project uses Docker Compose to set up a complete environment for Stock Prediction. It includes ZooKeeper, Kafka, producers, consumers, a Flask server, and a PostgreSQL database.
 
