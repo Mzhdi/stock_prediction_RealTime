@@ -5,6 +5,7 @@ import numpy as np
 from sklearn.linear_model import LogisticRegression
 from flask import Flask, request, jsonify
 import DbConnect as db
+from flask_cors import CORS
 
 database = db.DbConnect()
 
@@ -15,7 +16,7 @@ def predict_stock_trade_decision(model, today_features):
     print(prediction)
     # Interpret the prediction
     if prediction[0] == 1:
-    
+
         return "Open"  # Good day to open a position
     else:
         return "Close"  # Good day to close a position
@@ -63,7 +64,7 @@ def train_and_save_model(stock_symbol, start_date, end_date, model_filename):
 
 
 app = Flask(__name__)
-
+CORS(app, resources={r"/*": {"origins": "*"}})
 model_filename = 'stock_prediction_model.pkl'
 
 
@@ -90,7 +91,7 @@ def predict_endpoint():
     try:
         data = request.json
         today_features = data['features']
-        
+
         # Calculate the short-term SMA
         today_features.append(today_features[-2])
 
@@ -112,4 +113,4 @@ def predict_endpoint():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')

@@ -3,16 +3,22 @@ import psycopg2
 import datetime
 import DbConnect as db
 import requests
+import os
+from dotenv import load_dotenv
+from datetime import datetime
 
 database = db.DbConnect()
 
 # Define Kafka broker address and topic name
-KAFKA_BROKER = 'localhost:9092'
+load_dotenv()
+
+KAFKA_BROKER = os.getenv("KAFKA_HOST") + ':' + '9092'
 KAFKA_TOPIC = 'stock'
+FLASK_HOST = os.getenv("FLASK_SERVER_HOST")
 
 # Define PostgreSQL database connection parameters
 db_params = {
-    "host": "192.168.1.89",
+    "host": "postgres",
     "database": "Stock_hist",
     "user": "postgres",
     "password": "zerouk1234"
@@ -37,10 +43,20 @@ def consume_messages_from_kafka_and_insert():
             values = message_value.split(',')
             if len(values) == 6:
                 timestamp, open, high, low, close, volume = values
-                data = { 'features':[float(open),float(high),float(low),float(close),float(volume)]}
+                data = {'features': [float(open), float(
+                    high), float(low), float(close), float(volume)]}
+                dataTrain = {'stock_symbol': 'GOOG',
+                             'start_date': '2022-01-01', 'end_date': '2022-12-31'}
 
                 try:
-                    response = requests.post(url='http://localhost:5000/predict', json=data)
+                    train = requests.post(
+                        url='http://' + FLASK_HOST + ':5000/train',
+                        json=dataTrain
+                    )
+                    print(train.text)
+
+                    response = requests.post(
+                        url='http://' + FLASK_HOST + ':5000/predict', json=data)
                     print(response.text)
                     prediction = response.json()['prediction']
                     print(prediction)
@@ -52,21 +68,23 @@ def consume_messages_from_kafka_and_insert():
                     """
 
                     # Execute the INSERT statement with the message values
-                    cursor.execute(insert_statement, (timestamp,
-                                   open, high, low, close, volume, prediction))
+                    cursor.execute(insert_statement, datetime.strptime((timestamp, "%Y-%m-%d "),
+                                   float(open), float(high), float(low), float(close), float(volume), prediction))
                     conn.commit()
 
                     print("Inserted a row into the database.")
                 except ValueError:
                     print("Error: Invalid data format in the message.")
                     database.insert_one(
-                        {'error': 'Invalid data format in the message.'})
+                        {'error': 'Invalid data format in the message.''http://' + FLASK_HOST + ':5000/predict'})
             else:
                 print("Invalid message format:", message_value)
-                database.insert_one({'error': message_value})
+                database.insert_one(
+                    {'error': message_value + 'http://' + FLASK_HOST + ':5000/predict'})
         except Exception as e:
             print(f"Error processing message: {str(e)}")
-            database.insert_one({'error': str(e)})
+            database.insert_one(
+                {'error': str(e)+'http://' + FLASK_HOST + ':5000/predict'})
 
 
 def main():
