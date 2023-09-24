@@ -62,7 +62,7 @@ This project includes a Power BI dashboard for visualizing stock prediction data
 
 2. Sign in to your Power BI account or create one if you don't have an account.
 
-3. Import the provided Power BI file (`stock_prediction_dashboard.pbix`) into your Power BI workspace.
+3. Import the provided Power BI file (`Stock_Dashboard.pbix`) into your Power BI workspace.
 
 4. Customize the dashboard and reports as needed.
 
