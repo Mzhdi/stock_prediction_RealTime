@@ -50,10 +50,33 @@ PostgreSQL is used for storing historical stock data. It acts as a reliable and 
    cd stock-prediction-docker-compose
    
 2. Create a .env file based on the provided .env.example file. Customize it with your configuration settings.
+    - this is an exemble :
+      ```bash
+      MONGO_URI=
+      KAFKA_HOST=
+      FLASK_SERVER_HOST=
 
-3. Build and start the Docker containers:
+4. Build and start the Docker containers:
    ```bash
    docker-compose up -d
+
+## MongoDB Atlas Error Logging
+
+In this project, MongoDB Atlas is used for storing and visualizing error logs generated during the stock prediction process. MongoDB Atlas is a cloud-based MongoDB service that provides scalability, flexibility, and ease of use for data storage.
+
+### Setting Up MongoDB Atlas
+
+1. **Sign Up for MongoDB Atlas**:
+   - If you don't already have an account, sign up for MongoDB Atlas at [https://www.mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas).
+
+2. **Create a Cluster**:
+   - Once logged in, create a new MongoDB Atlas cluster. Follow the instructions provided in the MongoDB Atlas dashboard to set up your cluster.
+
+3. **Database and Collection**:
+    - Create a MongoDB database and collection within your MongoDB Atlas cluster to store error logs. You can do this using the MongoDB Atlas dashboard.
+4. **Add your Mongo URI to the .env file**
+  
+
 ## Power BI Dashboard
 
 This project includes a Power BI dashboard for visualizing stock prediction data. Follow these steps to view the dashboard:
