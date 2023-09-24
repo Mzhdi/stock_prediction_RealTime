@@ -11,7 +11,7 @@ Before you begin, make sure you have the following prerequisites installed on yo
 
 ## Project Architecture
 
-![Project Architecture](architecture.png)
+![Project Architecture](architecture.jpeg)
 
 ## Services
 
